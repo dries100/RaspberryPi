@@ -13,33 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QPushButton" name="pushButtonProblem">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>321</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonNext">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>120</y>
-     <width>321</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonPrev">
+  <widget class="QPushButton" name="pushButtonD">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -52,11 +26,37 @@
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButtonSuggestion">
+  <widget class="QPushButton" name="pushButtonA">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>321</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonB">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>60</y>
+     <width>321</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonC">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>120</y>
      <width>321</width>
      <height>61</height>
     </rect>

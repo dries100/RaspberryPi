@@ -1,6 +1,6 @@
 #!python3
 import sys
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QFileDialog
 from PyQt5.QtGui import QIcon, QPixmap
@@ -11,125 +11,160 @@ import random
 import time
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
-
 """
-class Life2CodingLoad(QDialog):
-	got_image = QtCore.pyqtSignal(str)
-	def __init__(self, parent=None):
-		super(Life2CodingLoad,self).__init__(parent)
-		loadUi('File12.ui',self)
-		self.setWindowTitle('Life2Coding PyQt5 Gui')
-		self.last_call = 0
 	@pyqtSlot()
-	def on_pushButtonLoad_clicked(self):
-		if time.time() - self.last_call < 1:
-			return
-		fname, _filter = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\',"Image files (*.jpg *.gif)")
-		self.got_image.emit(fname)
-
-		time.sleep(1)
-		self.last_call = time.time()
-	def on_valueChanged(self):
-		self.Test.setText(str(self.ZoomSlider.value()))
+	def on_pushButtonOk_clicked(self):
+		words= self.textEdit.toPlainText()
+		if words:
+			client.send_message("/buttonA", words)
+		else:
+			client.send_message("/buttonA", "empty")
 """
 
-class Life2Coding(QDialog):
-	def __init__(self):
-		super(Life2Coding,self).__init__()
-		loadUi('File1.ui',self)
+class Life2CodingScreenD(QDialog):
+	def __init__(self, parent):
+		super(Life2CodingScreenD,self).__init__(parent)
+		loadUi('File2D.ui',self)
 		self.setWindowTitle('APP')
-		self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+		self.last_call = 0
+		self.pushButtonOk.clicked.connect(self.on_pushButtonOk_clicked)
+		self.pushButtonCancel.clicked.connect(self.on_pushButtonCancel_clicked)
 
-		self.pushButtonA.clicked.connect(self.on_pushButtonA_clicked)
-		self.pushButtonB.clicked.connect(self.on_pushButtonB_clicked)
-		self.pushButtonC.clicked.connect(self.on_pushButtonC_clicked)
-		self.pushButtonD.clicked.connect(self.on_pushButtonD_clicked)
-		self.pushButtonHide.clicked.connect(self.on_pushButtonHide_clicked)
-		self.pushButtonNext.clicked.connect(self.on_pushButtonNext_clicked)
-		self.pushButtonPrev.clicked.connect(self.on_pushButtonPrev_clicked)
-		self.pushButtonLoad.clicked.connect(self.on_pushButtonLoad_clicked)
-		self.pushButtonClose.clicked.connect(self.on_pushButtonClose_clicked)
-
-		#self.ZoomSlider = QSlider(Qt.Horizontal)
 		self.ZoomSlider.setMinimum(0)
 		self.ZoomSlider.setMaximum(100)
 		self.ZoomSlider.setValue(0)
-		self.ZoomSlider.setTickInterval(5)
 		self.ZoomSlider.valueChanged.connect(self.on_valueChanged)
 
+	@pyqtSlot()
+	def on_pushButtonOk_clicked(self):
+		if time.time() - self.last_call < 1:
+			return
+		client.send_message("/takePicture", str(self.ZoomSlider.value()))
+		self.close() 
+		self.last_call = time.time()
+	def on_pushButtonCancel_clicked(self):
+		if time.time() - self.last_call < 1:
+			return
+		client.send_message("/cancelPicture", str(self.ZoomSlider.value()))
+		self.close()
+		self.last_call = time.time()
+	def on_valueChanged(self):
+		value = self.ZoomSlider.value()
+		myList = [1,50,100]
+		if value not in myList:
+			self.ZoomSlider.setValue(min(myList, key=lambda x:abs(x-value)))
+		client.send_message("/zoomSlider", str(self.ZoomSlider.value()))
+
+		
+class MainScreen2(QDialog):
+	#variable to signal to method in other window
+	#got_image = QtCore.pyqtSignal(str)
+	def __init__(self, parent):
+		super(MainScreen2,self).__init__(parent)
+		loadUi('File2.ui',self)
+		self.setWindowTitle('APP')
 		self.last_call = 0
 
+		self.pushButtonA.clicked.connect(self.on_pushButtonA_clicked)
+		self.pushButtonA.setIcon(QtGui.QIcon('images/recordtext.png'))
+		self.pushButtonB.clicked.connect(self.on_pushButtonB_clicked)
+		self.pushButtonB.setIcon(QtGui.QIcon('images/textquestion.png'))
+		self.pushButtonC.clicked.connect(self.on_pushButtonC_clicked)
+		self.pushButtonC.setIcon(QtGui.QIcon('images/imagequestion.png'))
+		self.pushButtonD.clicked.connect(self.on_pushButtonD_clicked)
+		self.pushButtonD.setIcon(QtGui.QIcon('images/camera.png'))
 	@pyqtSlot()
 	def on_pushButtonA_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		client.send_message("/filter", "A")
-		time.sleep(1)
+		#dialog = Life2CodingScreenA(self)
+		#dialog.show()
+		client.send_message("/buttonA", "A")
+		self.close()
 		self.last_call = time.time()
 	def on_pushButtonB_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		client.send_message("/filter", "B")
-		time.sleep(1)
+		client.send_message("/buttonB", "B")
+		self.close()
 		self.last_call = time.time()
 	def on_pushButtonC_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		client.send_message("/filter", "C")
-		time.sleep(1)
+		client.send_message("/buttonC", "C")
+		self.close()
 		self.last_call = time.time()
 	def on_pushButtonD_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		client.send_message("/filter", "D")
-		time.sleep(1)
+		dialog = Life2CodingScreenD(self)
+		dialog.show()
+		self.close()
 		self.last_call = time.time()
-	def on_pushButtonHide_clicked(self):
+
+	"""
+	#get picture url through explorer & signal to parent window
+	def on_pushButtonLoad_clicked(self):
+		fname, _filter = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\',"Image files (*.jpg *.gif)")
+		self.got_image.emit(fname)
+	"""
+
+class MainScreen(QDialog):
+	def __init__(self):
+		super(MainScreen,self).__init__()
+		loadUi('File1.ui',self)
+		self.setWindowTitle('APP')
+		#deletes top windowbar
+		#self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+		self.last_call = 0
+
+		self.pushButtonProblem.clicked.connect(self.on_pushButtonProblem_clicked)
+		self.pushButtonProblem.setIcon(QtGui.QIcon('images/question_mark.png'))
+		self.pushButtonSuggestion.clicked.connect(self.on_pushButtonSuggestion_clicked)
+		self.pushButtonSuggestion.setIcon(QtGui.QIcon('images/suggestion.png'))
+		self.pushButtonNext.clicked.connect(self.on_pushButtonNext_clicked)
+		self.pushButtonNext.setIcon(QtGui.QIcon('images/next.png'))
+		self.pushButtonPrev.clicked.connect(self.on_pushButtonPrev_clicked)
+		self.pushButtonPrev.setIcon(QtGui.QIcon('images/previous.png'))
+
+		
+	@pyqtSlot()
+	def on_pushButtonProblem_clicked(self):
+		#if statements prevent multiple signals
 		if time.time() - self.last_call < 1:
 			return
-		client.send_message("/filter", "Hide")
-		time.sleep(1)
+		client.send_message("/problem", ".")
+		#correct send?
 		self.last_call = time.time()
 	def on_pushButtonNext_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		client.send_message("/filter", "Next")
-		time.sleep(1)
+		client.send_message("/next", ".")
 		self.last_call = time.time()
 	def on_pushButtonPrev_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		client.send_message("/filter", "Prev")
-		time.sleep(1)
+		client.send_message("/previous", ".")
 		self.last_call = time.time()
-	def on_pushButtonLoad_clicked(self):
+	def on_pushButtonSuggestion_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		"""
-		dialog = Life2CodingLoad(self)
-		dialog.got_image.connect(self.show_it)
+		#open other window
+		dialog = MainScreen2(self)
+		#connect signaling method to other window
+		#dialog.got_image.connect(self.show_it)
 		dialog.show()
-		"""
-		fname, _filter = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\',"Image files (*.jpg *.gif)")
-		self.label_2.setPixmap(QPixmap(fname))
-		##
-
-		time.sleep(1)
 		self.last_call = time.time()
-	def on_valueChanged(self):
-		self.Test.setText(str(self.ZoomSlider.value()))	
-	def on_pushButtonClose_clicked(self):
-		self.close()
-
 """
+	#method to accept signal from other window
 	def show_it(self, the_image):
-		print(the_image)
+		#set pixmap based on url
 		self.label_2.setPixmap(QPixmap(the_image))
 """
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
-	parser.add_argument("--ip", default="192.168.1.14",
+	parser.add_argument("--ip", default="127.0.0.1",
 	  help="The ip of the OSC server")
 	parser.add_argument("--port", type=int, default=5005,
 	  help="The port the OSC server is listening on")
@@ -139,7 +174,7 @@ if __name__ == "__main__":
 
 	print('dat werkt precies')
 	app=QApplication(sys.argv)
-	widget=Life2Coding()
+	widget=MainScreen()
 	widget.show()
 	sys.exit(app.exec_())
 
