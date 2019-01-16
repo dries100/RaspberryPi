@@ -25,7 +25,8 @@ class Life2CodingScreenD(QDialog):
 	def __init__(self, parent):
 		super(Life2CodingScreenD,self).__init__(parent)
 		loadUi('File2D.ui',self)
-		self.setWindowTitle('APP')
+		self.setWindowTitle('Take Picture')
+		self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
 		self.last_call = 0
 		self.pushButtonOk.clicked.connect(self.on_pushButtonOk_clicked)
 		self.pushButtonCancel.clicked.connect(self.on_pushButtonCancel_clicked)
@@ -63,6 +64,7 @@ class MainScreen2(QDialog):
 		super(MainScreen2,self).__init__(parent)
 		loadUi('File2.ui',self)
 		self.setWindowTitle('APP')
+		self.setWindowFlags(self.windowFlags() | QtCore.Qt.FramelessWindowHint)
 		self.last_call = 0
 
 		self.pushButtonA.clicked.connect(self.on_pushButtonA_clicked)
@@ -115,7 +117,7 @@ class MainScreen(QDialog):
 		loadUi('File1.ui',self)
 		self.setWindowTitle('APP')
 		#deletes top windowbar
-		#self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+		self.setWindowFlags(self.windowFlags() | QtCore.Qt.FramelessWindowHint)
 		self.last_call = 0
 
 		self.pushButtonProblem.clicked.connect(self.on_pushButtonProblem_clicked)
