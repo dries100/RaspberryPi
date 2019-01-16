@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=GUI
+Type=Application
+Terminal=false
+Path=/home/pi/Desktop/Dries100/
+Exec=python3 raspberrypiscript.py
