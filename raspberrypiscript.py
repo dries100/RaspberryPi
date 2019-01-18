@@ -21,9 +21,9 @@ from pythonosc import udp_client
 			client.send_message("/buttonA", "empty")
 """
 
-class Life2CodingScreenD(QDialog):
+class TakePictureScreen(QDialog):
 	def __init__(self, parent):
-		super(Life2CodingScreenD,self).__init__(parent)
+		super(TakePictureScreen,self).__init__(parent)
 		loadUi('File2D.ui',self)
 		self.setWindowTitle('Take Picture')
 		self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
@@ -99,7 +99,7 @@ class MainScreen2(QDialog):
 	def on_pushButtonD_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		dialog = Life2CodingScreenD(self)
+		dialog = TakePictureScreen(self)
 		dialog.show()
 		self.close()
 		self.last_call = time.time()
