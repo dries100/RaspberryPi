@@ -35,6 +35,7 @@ class TakePictureScreen(QDialog):
 		self.ZoomSlider.setMaximum(100)
 		self.ZoomSlider.setValue(0)
 		self.ZoomSlider.valueChanged.connect(self.on_valueChanged)
+		self.ZoomSlider.setStyleSheet("QSlider::groove:vertical { border: 1px solid;  width: 20px;   margin: 0px;    } QSlider::handle:vertical {    background-color: black;    border: 1px solid;    height: 40px;    width: 40px;    margin: -15px 0px; }")
 
 	@pyqtSlot()
 	def on_pushButtonOk_clicked(self):
@@ -57,16 +58,18 @@ class TakePictureScreen(QDialog):
 		client.send_message("/zoomSlider", str(self.ZoomSlider.value()))
 
 		
-class MainScreen2(QDialog):
+class FeedbackScreen(QDialog):
 	#variable to signal to method in other window
 	#got_image = QtCore.pyqtSignal(str)
 	def __init__(self, parent):
-		super(MainScreen2,self).__init__(parent)
+		super(FeedbackScreen,self).__init__(parent)
 		loadUi('File2.ui',self)
 		self.setWindowTitle('APP')
 		self.setWindowFlags(self.windowFlags() | QtCore.Qt.FramelessWindowHint)
 		self.last_call = 0
+		self.isInfoVisible = False
 
+		self.pushButtonHide.clicked.connect(self.on_pushButtonToggle_clicked)
 		self.pushButtonA.clicked.connect(self.on_pushButtonA_clicked)
 		self.pushButtonA.setIcon(QtGui.QIcon('images/recordtext.png'))
 		self.pushButtonB.clicked.connect(self.on_pushButtonB_clicked)
@@ -76,6 +79,15 @@ class MainScreen2(QDialog):
 		self.pushButtonD.clicked.connect(self.on_pushButtonD_clicked)
 		self.pushButtonD.setIcon(QtGui.QIcon('images/camera.png'))
 	@pyqtSlot()
+	def on_pushButtonToggle_clicked(self):
+		if time.time() - self.last_call < 1:
+			return
+		if self.isInfoVisible:
+			client.send_message("/hide", ".")
+		else: 
+			client.send_message("/show", ".")
+		self.isInfoVisible = not self.isInfoVisible
+		self.last_call = time.time()
 	def on_pushButtonA_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
@@ -119,7 +131,9 @@ class MainScreen(QDialog):
 		#deletes top windowbar
 		self.setWindowFlags(self.windowFlags() | QtCore.Qt.FramelessWindowHint)
 		self.last_call = 0
+		self.isInfoVisible = False
 
+		self.pushButtonHide.clicked.connect(self.on_pushButtonToggle_clicked)
 		self.pushButtonProblem.clicked.connect(self.on_pushButtonProblem_clicked)
 		self.pushButtonProblem.setIcon(QtGui.QIcon('images/question_mark.png'))
 		self.pushButtonSuggestion.clicked.connect(self.on_pushButtonSuggestion_clicked)
@@ -131,6 +145,15 @@ class MainScreen(QDialog):
 
 		
 	@pyqtSlot()
+	def on_pushButtonToggle_clicked(self):
+		if time.time() - self.last_call < 1:
+			return
+		if self.isInfoVisible:
+			client.send_message("/hide", ".")
+		else: 
+			client.send_message("/show", ".")
+		self.isInfoVisible = not self.isInfoVisible
+		self.last_call = time.time()
 	def on_pushButtonProblem_clicked(self):
 		#if statements prevent multiple signals
 		if time.time() - self.last_call < 1:
@@ -152,7 +175,7 @@ class MainScreen(QDialog):
 		if time.time() - self.last_call < 1:
 			return
 		#open other window
-		dialog = MainScreen2(self)
+		dialog = FeedbackScreen(self)
 		#connect signaling method to other window
 		#dialog.got_image.connect(self.show_it)
 		dialog.show()
