@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Take Picture</string>
   </property>
   <widget class="QLabel" name="Test">
    <property name="geometry">
@@ -29,9 +29,9 @@
   <widget class="QPushButton" name="pushButtonCancel">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>180</x>
      <y>0</y>
-     <width>91</width>
+     <width>140</width>
      <height>121</height>
     </rect>
    </property>
@@ -42,10 +42,10 @@
   <widget class="QPushButton" name="pushButtonOk">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>180</x>
      <y>120</y>
-     <width>91</width>
-     <height>121</height>
+     <width>140</width>
+     <height>120</height>
     </rect>
    </property>
    <property name="text">
@@ -55,10 +55,10 @@
   <widget class="QSlider" name="ZoomSlider">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>30</y>
-     <width>22</width>
-     <height>160</height>
+     <x>130</x>
+     <y>10</y>
+     <width>30</width>
+     <height>220</height>
     </rect>
    </property>
    <property name="pageStep">
