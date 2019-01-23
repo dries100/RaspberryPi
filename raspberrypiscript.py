@@ -11,15 +11,7 @@ import random
 import time
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
-"""
-	@pyqtSlot()
-	def on_pushButtonOk_clicked(self):
-		words= self.textEdit.toPlainText()
-		if words:
-			client.send_message("/buttonA", words)
-		else:
-			client.send_message("/buttonA", "empty")
-"""
+
 
 class TakePictureScreen(QDialog):
 	def __init__(self, parent):
@@ -34,6 +26,7 @@ class TakePictureScreen(QDialog):
 		self.ZoomSlider.setMinimum(0)
 		self.ZoomSlider.setMaximum(100)
 		self.ZoomSlider.setValue(0)
+		self.ZoomSlider.setInvertedAppearance(True)
 		self.ZoomSlider.valueChanged.connect(self.on_valueChanged)
 		self.ZoomSlider.setStyleSheet("QSlider::groove:vertical { border: 1px solid;  width: 20px;   margin: 0px;    } QSlider::handle:vertical {    background-color: black;    border: 1px solid;    height: 40px;    width: 40px;    margin: -15px 0px; }")
 
@@ -55,9 +48,33 @@ class TakePictureScreen(QDialog):
 		myList = [1,50,100]
 		if value not in myList:
 			self.ZoomSlider.setValue(min(myList, key=lambda x:abs(x-value)))
-		client.send_message("/zoomSlider", str(self.ZoomSlider.value()))
+		client.send_message("/setSlider", self.ZoomSlider.value())
 
-		
+class RecordAudioScreen(QDialog):
+	def __init__(self, parent):
+		super(RecordAudioScreen,self).__init__(parent)
+		loadUi('File2A.ui',self)
+		self.setWindowTitle('Record Audio')
+		self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
+		self.last_call = 0
+		self.pushButtonOk.clicked.connect(self.on_pushButtonOk_clicked)
+		self.pushButtonCancel.clicked.connect(self.on_pushButtonCancel_clicked)
+
+	@pyqtSlot()
+	def on_pushButtonOk_clicked(self):
+		if time.time() - self.last_call < 1:
+			return
+		client.send_message("/buttonD", ".")
+		self.close() 
+		self.last_call = time.time()
+	def on_pushButtonCancel_clicked(self):
+		if time.time() - self.last_call < 1:
+			return
+		client.send_message("/buttonA", ".")
+		self.close()
+		self.last_call = time.time()
+
+
 class FeedbackScreen(QDialog):
 	#variable to signal to method in other window
 	#got_image = QtCore.pyqtSignal(str)
@@ -91,9 +108,9 @@ class FeedbackScreen(QDialog):
 	def on_pushButtonA_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
-		#dialog = Life2CodingScreenA(self)
-		#dialog.show()
 		client.send_message("/buttonA", "A")
+		dialog = RecordAudioScreen(self)
+		dialog.show()
 		self.close()
 		self.last_call = time.time()
 	def on_pushButtonB_clicked(self):
@@ -111,6 +128,7 @@ class FeedbackScreen(QDialog):
 	def on_pushButtonD_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
+		client.send_message("/buttonD", ".")
 		dialog = TakePictureScreen(self)
 		dialog.show()
 		self.close()
@@ -158,7 +176,7 @@ class MainScreen(QDialog):
 		#if statements prevent multiple signals
 		if time.time() - self.last_call < 1:
 			return
-		client.send_message("/problem", ".")
+		client.send_message("/buttonA", ".")
 		#correct send?
 		self.last_call = time.time()
 	def on_pushButtonNext_clicked(self):
@@ -174,6 +192,7 @@ class MainScreen(QDialog):
 	def on_pushButtonSuggestion_clicked(self):
 		if time.time() - self.last_call < 1:
 			return
+		client.send_message("/buttonB", ".")	
 		#open other window
 		dialog = FeedbackScreen(self)
 		#connect signaling method to other window
@@ -191,7 +210,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--ip", default="127.0.0.1",
 	  help="The ip of the OSC server")
-	parser.add_argument("--port", type=int, default=5005,
+	parser.add_argument("--port", type=int, default=5550,
 	  help="The port the OSC server is listening on")
 	args = parser.parse_args()
 
